@@ -19,6 +19,7 @@ import {
 } from '../data/defaultConfig'
 import type { SiteConfig, Wish } from '../types'
 import {
+  assetUrl,
   calendarUrl,
   formatRelativeTime,
   mapsUrl,
@@ -42,7 +43,7 @@ function PhotoOrPlaceholder({
   initial: string
 }) {
   if (src) {
-    return <img src={src} alt={alt} loading="lazy" decoding="async" />
+    return <img src={assetUrl(src)} alt={alt} loading="lazy" decoding="async" />
   }
   return <ImagePlaceholder label={initial || 'Muat naik foto'} />
 }
@@ -167,7 +168,7 @@ export function InvitationPage({
                     <img
                       key={`${group}-${i}`}
                       className="marquee__sticker"
-                      src={src}
+                      src={assetUrl(src)}
                       alt=""
                       decoding="async"
                       draggable={false}
@@ -368,7 +369,12 @@ export function InvitationPage({
           ) : (
             config.gallery.map((src, i) => (
               <div key={i} className="gallery__item">
-                <img src={src} alt={`Galeri ${i + 1}`} loading="lazy" decoding="async" />
+                <img
+                  src={assetUrl(src)}
+                  alt={`Galeri ${i + 1}`}
+                  loading="lazy"
+                  decoding="async"
+                />
               </div>
             ))
           )}

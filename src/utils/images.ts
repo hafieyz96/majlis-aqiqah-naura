@@ -14,6 +14,15 @@ function loadImage(file: File): Promise<HTMLImageElement> {
   })
 }
 
+/** Resolve public asset path with Vite base (GitHub Pages subpath). */
+export function assetUrl(path: string): string {
+  if (!path) return ''
+  if (path.startsWith('data:') || /^https?:\/\//i.test(path)) return path
+  const base = import.meta.env.BASE_URL || '/'
+  const clean = path.replace(/^\//, '')
+  return `${base}${clean}`
+}
+
 /** Compress/resize image to maxWidth JPEG (quality 0.8). Stickers keep PNG. */
 export async function fileToDataUrl(
   file: File,
@@ -35,6 +44,20 @@ export async function fileToDataUrl(
     return canvas.toDataURL('image/png')
   }
   return canvas.toDataURL('image/jpeg', quality)
+}
+
+export async function fileToUploadPayload(
+  file: File,
+  options: { maxWidth?: number; quality?: number; keepPng?: boolean } = {},
+): Promise<{ dataBase64: string; mimeType: string; filename: string }> {
+  const dataUrl = await fileToDataUrl(file, options)
+  const [, dataBase64 = ''] = dataUrl.split(',')
+  const mimeType = dataUrl.match(/data:([^;]+)/)?.[1] ?? file.type ?? 'image/jpeg'
+  const ext = mimeType.includes('png') ? 'png' : 'jpg'
+  const baseName = file.name.replace(/\.[^.]+$/, '') || 'upload'
+  const safe =
+    baseName.replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '') || 'upload'
+  return { dataBase64, mimeType, filename: `${safe}.${ext}` }
 }
 
 export function formatRelativeTime(iso: string): string {

@@ -1,0 +1,68 @@
+{
+    "card":  [
+                 "/images/card/card-01.jpg"
+             ],
+    "files":  {
+                  "stickers":  [
+                                   "/images/stickers/sticker-01.jpg",
+                                   "/images/stickers/sticker-02.jpg",
+                                   "/images/stickers/sticker-03.jpg",
+                                   "/images/stickers/sticker-04.jpg",
+                                   "/images/stickers/sticker-05.jpg",
+                                   "/images/stickers/sticker-06.jpg"
+                               ],
+                  "hero":  [
+                               "/images/hero/hero-01.jpg"
+                           ],
+                  "gallery":  [
+                                  "/images/gallery/gallery-01.jpg",
+                                  "/images/gallery/gallery-02.jpg",
+                                  "/images/gallery/gallery-03.jpg",
+                                  "/images/gallery/gallery-04.jpg",
+                                  "/images/gallery/gallery-05.jpg",
+                                  "/images/gallery/gallery-06.jpg",
+                                  "/images/gallery/gallery-07.jpg",
+                                  "/images/gallery/gallery-08.jpg",
+                                  "/images/gallery/gallery-09.jpg",
+                                  "/images/gallery/gallery-10.jpg",
+                                  "/images/gallery/gallery-11.jpg",
+                                  "/images/gallery/gallery-12.jpg",
+                                  "/images/gallery/gallery-13.jpg"
+                              ],
+                  "card":  [
+                               "/images/card/card-01.jpg"
+                           ]
+              },
+    "gallery":  [
+                    "/images/gallery/gallery-01.jpg",
+                    "/images/gallery/gallery-02.jpg",
+                    "/images/gallery/gallery-03.jpg",
+                    "/images/gallery/gallery-04.jpg",
+                    "/images/gallery/gallery-05.jpg",
+                    "/images/gallery/gallery-06.jpg",
+                    "/images/gallery/gallery-07.jpg",
+                    "/images/gallery/gallery-08.jpg",
+                    "/images/gallery/gallery-09.jpg",
+                    "/images/gallery/gallery-10.jpg",
+                    "/images/gallery/gallery-11.jpg",
+                    "/images/gallery/gallery-12.jpg",
+                    "/images/gallery/gallery-13.jpg"
+                ],
+    "hero":  [
+                 "/images/hero/hero-01.jpg"
+             ],
+    "folders":  [
+                    "card",
+                    "gallery",
+                    "hero",
+                    "stickers"
+                ],
+    "stickers":  [
+                     "/images/stickers/sticker-01.jpg",
+                     "/images/stickers/sticker-02.jpg",
+                     "/images/stickers/sticker-03.jpg",
+                     "/images/stickers/sticker-04.jpg",
+                     "/images/stickers/sticker-05.jpg",
+                     "/images/stickers/sticker-06.jpg"
+                 ]
+}

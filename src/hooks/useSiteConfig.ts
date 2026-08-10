@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { defaultConfig } from '../data/defaultConfig'
 import type { SiteConfig } from '../types'
 
-const STORAGE_KEY = 'majlis-aqiqah-config-v2'
+const STORAGE_KEY = 'majlis-aqiqah-config-v3'
 
 function loadConfig(): SiteConfig {
   try {

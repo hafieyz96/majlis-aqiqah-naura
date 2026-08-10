@@ -1,9 +1,9 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import { FolderImagesPanel } from '../components/FolderImagesPanel'
 import { defaultConfig } from '../data/defaultConfig'
 import { useSiteConfig } from '../hooks/useSiteConfig'
 import type { Child, ProgrammeBlock, SiteConfig } from '../types'
-import { fileToDataUrl } from '../utils/images'
 
 function Field({
   label,
@@ -45,21 +45,6 @@ export function SettingsPage() {
       const programme = d.programme.map((p, i) => (i === index ? { ...p, ...patch } : p))
       return { ...d, programme }
     })
-  }
-
-  const onImage = async (
-    file: File | undefined,
-    apply: (dataUrl: string) => void,
-    keepPng = false,
-  ) => {
-    if (!file) return
-    try {
-      const dataUrl = await fileToDataUrl(file, { keepPng })
-      apply(dataUrl)
-      setStatus('')
-    } catch {
-      setStatus('Gagal memproses imej. Cuba fail lain.')
-    }
   }
 
   const onSave = (e: FormEvent) => {
@@ -328,38 +313,26 @@ export function SettingsPage() {
                 }
               />
             </Field>
-            <div className="settings__row">
-              <Field label="Foto hero (polaroid)">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    void onImage(e.target.files?.[0], (url) =>
-                      updateChild(index, { heroPhoto: url }),
-                    )
-                  }
-                />
-                {child.heroPhoto && (
-                  <img className="settings__thumb" src={child.heroPhoto} alt="" />
-                )}
-              </Field>
-              <Field label="Foto kad">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    void onImage(e.target.files?.[0], (url) =>
-                      updateChild(index, { cardPhoto: url }),
-                    )
-                  }
-                />
-                {child.cardPhoto && (
-                  <img className="settings__thumb" src={child.cardPhoto} alt="" />
-                )}
-              </Field>
-            </div>
           </section>
         ))}
+
+        <FolderImagesPanel
+          title="Foto hero (polaroid)"
+          folder="hero"
+          multi={false}
+          selected={draft.children[0]?.heroPhoto ? [draft.children[0].heroPhoto] : []}
+          onChange={(paths) => updateChild(0, { heroPhoto: paths[0] ?? '' })}
+          onStatus={setStatus}
+        />
+
+        <FolderImagesPanel
+          title="Foto kad sambutan"
+          folder="card"
+          multi={false}
+          selected={draft.children[0]?.cardPhoto ? [draft.children[0].cardPhoto] : []}
+          onChange={(paths) => updateChild(0, { cardPhoto: paths[0] ?? '' })}
+          onStatus={setStatus}
+        />
 
         <section className="card settings__card">
           <h2>WhatsApp</h2>
@@ -423,81 +396,25 @@ export function SettingsPage() {
           ))}
         </section>
 
-        <section className="card settings__card">
-          <h2>Galeri</h2>
-          <Field label="Tambah gambar galeri">
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={async (e) => {
-                const files = [...(e.target.files ?? [])]
-                const urls: string[] = []
-                for (const f of files) {
-                  urls.push(await fileToDataUrl(f))
-                }
-                update('gallery', [...draft.gallery, ...urls])
-              }}
-            />
-          </Field>
-          <div className="settings__thumbs">
-            {draft.gallery.map((src, i) => (
-              <div key={i} className="settings__thumb-wrap">
-                <img className="settings__thumb" src={src} alt="" />
-                <button
-                  type="button"
-                  className="settings__remove"
-                  onClick={() =>
-                    update(
-                      'gallery',
-                      draft.gallery.filter((_, idx) => idx !== i),
-                    )
-                  }
-                >
-                  Buang
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
+        <FolderImagesPanel
+          title="Galeri"
+          folder="gallery"
+          multi
+          selected={draft.gallery}
+          onChange={(paths) => update('gallery', paths)}
+          onStatus={setStatus}
+        />
 
-        <section className="card settings__card">
-          <h2>Stiker marquee (PNG)</h2>
-          <Field label="Tambah stiker">
-            <input
-              type="file"
-              accept="image/png,image/*"
-              multiple
-              onChange={async (e) => {
-                const files = [...(e.target.files ?? [])]
-                const urls: string[] = []
-                for (const f of files) {
-                  urls.push(await fileToDataUrl(f, { maxWidth: 400, keepPng: true }))
-                }
-                update('stickers', [...draft.stickers, ...urls])
-              }}
-            />
-          </Field>
-          <div className="settings__thumbs">
-            {draft.stickers.map((src, i) => (
-              <div key={i} className="settings__thumb-wrap">
-                <img className="settings__thumb settings__thumb--sticker" src={src} alt="" />
-                <button
-                  type="button"
-                  className="settings__remove"
-                  onClick={() =>
-                    update(
-                      'stickers',
-                      draft.stickers.filter((_, idx) => idx !== i),
-                    )
-                  }
-                >
-                  Buang
-                </button>
-              </div>
-            ))}
-          </div>
-        </section>
+        <FolderImagesPanel
+          title="Stiker marquee"
+          folder="stickers"
+          multi
+          accept="image/png,image/*"
+          keepPng
+          selected={draft.stickers}
+          onChange={(paths) => update('stickers', paths)}
+          onStatus={setStatus}
+        />
 
         <div className="settings__actions">
           <button type="submit" className="btn btn--solid">
