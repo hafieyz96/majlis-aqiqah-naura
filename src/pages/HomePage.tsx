@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { BottomNav } from '../components/BottomNav'
 import { ContactSheet } from '../components/ContactSheet'
 import { Gate } from '../components/Gate'
 import { InvitationPage } from '../components/InvitationPage'
-import { MusicButton } from '../components/MusicButton'
+import { MusicButton, type MusicButtonHandle } from '../components/MusicButton'
 import { getDisplayNames } from '../data/defaultConfig'
 import { useSiteConfig } from '../hooks/useSiteConfig'
 import { useWishes } from '../hooks/useWishes'
@@ -13,6 +13,7 @@ export function HomePage() {
   const { wishes, addWish } = useWishes()
   const [gateGone, setGateGone] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
+  const musicRef = useRef<MusicButtonHandle>(null)
 
   const names = getDisplayNames(config)
 
@@ -23,6 +24,9 @@ export function HomePage() {
           eventTitle={config.eventTitle}
           names={names}
           jawiTitle={config.jawiTitle}
+          onOpen={() => {
+            void musicRef.current?.start()
+          }}
           onOpened={() => {
             setGateGone(true)
           }}
@@ -37,7 +41,7 @@ export function HomePage() {
       />
 
       <BottomNav onContact={() => setContactOpen(true)} />
-      <MusicButton audioUrl={config.audioUrl} />
+      <MusicButton ref={musicRef} audioUrl={config.audioUrl} />
       <ContactSheet
         open={contactOpen}
         onClose={() => setContactOpen(false)}

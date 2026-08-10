@@ -7,10 +7,12 @@ interface GateProps {
   eventTitle: string
   names: string
   jawiTitle: string
+  /** Called immediately on click (same user gesture — needed for audio.play). */
+  onOpen?: () => void
   onOpened: () => void
 }
 
-export function Gate({ eventTitle, names, jawiTitle, onOpened }: GateProps) {
+export function Gate({ eventTitle, names, jawiTitle, onOpen, onOpened }: GateProps) {
   const [phase, setPhase] = useState<GatePhase>('tertutup')
   const [unlocked, setUnlocked] = useState(false)
 
@@ -23,6 +25,7 @@ export function Gate({ eventTitle, names, jawiTitle, onOpened }: GateProps) {
 
   const open = () => {
     if (phase !== 'tertutup') return
+    onOpen?.()
     setUnlocked(true)
     window.setTimeout(() => {
       setPhase('terbuka')
