@@ -88,7 +88,7 @@ export const defaultConfig: SiteConfig = {
     '/images/stickers/sticker-05.jpg',
     '/images/stickers/sticker-06.jpg',
   ],
-  audioUrl: '',
+  audioUrl: 'https://www.youtube.com/watch?v=qs0EwXMLAsY',
   doaText:
     'Ya Allah, jadikanlah anak-anak kami anak yang solehah, dikurniakan kesihatan, dipanjangkan usia dalam kebaikan dan sentiasa berada dalam rahmat serta perlindungan-Mu.',
   closingThanks: 'Terima kasih atas doa, kehadiran dan ingatan daripada anda sekeluarga.',

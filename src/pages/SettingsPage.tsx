@@ -250,12 +250,12 @@ export function SettingsPage() {
               onChange={(e) => update('closingThanks', e.target.value)}
             />
           </Field>
-          <Field label="URL audio (pilihan)">
+          <Field label="URL audio / YouTube (pilihan)">
             <input
               className="field__input"
               value={draft.audioUrl}
               onChange={(e) => update('audioUrl', e.target.value)}
-              placeholder="https://.../lagu.mp3"
+              placeholder="https://www.youtube.com/watch?v=... atau .mp3"
             />
           </Field>
         </section>

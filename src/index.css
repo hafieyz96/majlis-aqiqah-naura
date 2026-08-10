@@ -1349,6 +1349,16 @@ to {
 }
 
 }
+.music-yt {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+  top: 0;
+}
 .music-btn {
   position:fixed;
   top:calc(14px + env(safe-area-inset-top,0px));
