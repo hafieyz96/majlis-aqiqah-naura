@@ -11,7 +11,6 @@ import { useWishes } from '../hooks/useWishes'
 export function HomePage() {
   const { config } = useSiteConfig()
   const { wishes, addWish } = useWishes()
-  const [opened, setOpened] = useState(false)
   const [gateGone, setGateGone] = useState(false)
   const [contactOpen, setContactOpen] = useState(false)
 
@@ -25,7 +24,6 @@ export function HomePage() {
           names={names}
           jawiTitle={config.jawiTitle}
           onOpened={() => {
-            setOpened(true)
             setGateGone(true)
           }}
         />
@@ -39,7 +37,7 @@ export function HomePage() {
       />
 
       <BottomNav onContact={() => setContactOpen(true)} />
-      <MusicButton audioUrl={config.audioUrl} unlocked={opened} />
+      <MusicButton audioUrl={config.audioUrl} />
       <ContactSheet
         open={contactOpen}
         onClose={() => setContactOpen(false)}

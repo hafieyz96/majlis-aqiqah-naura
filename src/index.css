@@ -360,7 +360,7 @@ to {
 }
 
 }
-body.gerbang-aktif .page,body.gerbang-aktif .bottom-nav,body.gerbang-aktif .music-btn {
+body.gerbang-aktif .page,body.gerbang-aktif .bottom-nav {
   opacity:0;
   visibility:hidden;
   pointer-events:none

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 
 interface MusicButtonProps {
   audioUrl: string
-  unlocked: boolean
 }
 
 declare global {
@@ -16,6 +15,7 @@ declare global {
           events?: {
             onReady?: (e: { target: YtPlayer }) => void
             onStateChange?: (e: { data: number; target: YtPlayer }) => void
+            onError?: () => void
           }
         },
       ) => YtPlayer
@@ -28,6 +28,8 @@ declare global {
 interface YtPlayer {
   playVideo: () => void
   pauseVideo: () => void
+  unMute: () => void
+  mute: () => void
   destroy: () => void
   getPlayerState: () => number
 }
@@ -65,14 +67,37 @@ function loadYoutubeApi(): Promise<void> {
   })
 }
 
-export function MusicButton({ audioUrl, unlocked }: MusicButtonProps) {
+export function MusicButton({ audioUrl }: MusicButtonProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const ytPlayerRef = useRef<YtPlayer | null>(null)
   const ytHostRef = useRef<HTMLDivElement | null>(null)
+  const userPausedRef = useRef(false)
   const [playing, setPlaying] = useState(false)
   const [ready, setReady] = useState(false)
 
   const youtubeId = audioUrl ? parseYoutubeId(audioUrl) : null
+
+  const tryPlay = () => {
+    if (userPausedRef.current) return
+    if (youtubeId) {
+      const player = ytPlayerRef.current
+      if (!player) return
+      try {
+        player.unMute()
+        player.playVideo()
+        setPlaying(true)
+      } catch {
+        setPlaying(false)
+      }
+      return
+    }
+    const audio = audioRef.current
+    if (!audio) return
+    void audio
+      .play()
+      .then(() => setPlaying(true))
+      .catch(() => setPlaying(false))
+  }
 
   useEffect(() => {
     if (!audioUrl) return
@@ -87,7 +112,8 @@ export function MusicButton({ audioUrl, unlocked }: MusicButtonProps) {
         ytPlayerRef.current = new window.YT.Player(ytHostRef.current, {
           videoId: youtubeId,
           playerVars: {
-            autoplay: 0,
+            autoplay: 1,
+            mute: 0,
             controls: 0,
             disablekb: 1,
             fs: 0,
@@ -96,16 +122,29 @@ export function MusicButton({ audioUrl, unlocked }: MusicButtonProps) {
             loop: 1,
             playlist: youtubeId,
             playsinline: 1,
+            origin: window.location.origin,
           },
           events: {
-            onReady: () => {
-              if (!cancelled) setReady(true)
+            onReady: (e) => {
+              if (cancelled) return
+              setReady(true)
+              try {
+                e.target.unMute()
+                e.target.playVideo()
+                setPlaying(true)
+              } catch {
+                setPlaying(false)
+              }
             },
             onStateChange: (e) => {
               const playingState = window.YT?.PlayerState.PLAYING ?? 1
               const pausedState = window.YT?.PlayerState.PAUSED ?? 2
+              const endedState = window.YT?.PlayerState.ENDED ?? 0
               if (e.data === playingState) setPlaying(true)
               if (e.data === pausedState) setPlaying(false)
+              if (e.data === endedState && !userPausedRef.current) {
+                e.target.playVideo()
+              }
             },
           },
         })
@@ -120,9 +159,15 @@ export function MusicButton({ audioUrl, unlocked }: MusicButtonProps) {
 
     const audio = new Audio(audioUrl)
     audio.loop = true
-    audio.preload = 'metadata'
+    audio.preload = 'auto'
+    audio.autoplay = true
     audioRef.current = audio
     setReady(true)
+    void audio
+      .play()
+      .then(() => setPlaying(true))
+      .catch(() => setPlaying(false))
+
     return () => {
       cancelled = true
       audio.pause()
@@ -130,24 +175,35 @@ export function MusicButton({ audioUrl, unlocked }: MusicButtonProps) {
     }
   }, [audioUrl, youtubeId])
 
+  // Retry autoplay on first user gesture (browser policy)
   useEffect(() => {
-    if (!unlocked || !audioUrl || !ready) return
-    if (youtubeId) {
-      try {
-        ytPlayerRef.current?.playVideo()
-        setPlaying(true)
-      } catch {
-        setPlaying(false)
-      }
-      return
+    if (!audioUrl || !ready) return
+
+    const resume = () => {
+      if (userPausedRef.current || playing) return
+      tryPlay()
     }
-    const audio = audioRef.current
-    if (!audio) return
-    audio
-      .play()
-      .then(() => setPlaying(true))
-      .catch(() => setPlaying(false))
-  }, [unlocked, audioUrl, ready, youtubeId])
+
+    const opts: AddEventListenerOptions = { capture: true, passive: true }
+    document.addEventListener('pointerdown', resume, opts)
+    document.addEventListener('touchstart', resume, opts)
+    document.addEventListener('keydown', resume, opts)
+    document.addEventListener('click', resume, opts)
+
+    // Also retry shortly after load
+    const t1 = window.setTimeout(tryPlay, 300)
+    const t2 = window.setTimeout(tryPlay, 1000)
+
+    return () => {
+      document.removeEventListener('pointerdown', resume, opts)
+      document.removeEventListener('touchstart', resume, opts)
+      document.removeEventListener('keydown', resume, opts)
+      document.removeEventListener('click', resume, opts)
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tryPlay reads latest refs
+  }, [audioUrl, ready, playing])
 
   if (!audioUrl) return null
 
@@ -156,9 +212,12 @@ export function MusicButton({ audioUrl, unlocked }: MusicButtonProps) {
       const player = ytPlayerRef.current
       if (!player) return
       if (playing) {
+        userPausedRef.current = true
         player.pauseVideo()
         setPlaying(false)
       } else {
+        userPausedRef.current = false
+        player.unMute()
         player.playVideo()
         setPlaying(true)
       }
@@ -168,9 +227,11 @@ export function MusicButton({ audioUrl, unlocked }: MusicButtonProps) {
     const audio = audioRef.current
     if (!audio) return
     if (playing) {
+      userPausedRef.current = true
       audio.pause()
       setPlaying(false)
     } else {
+      userPausedRef.current = false
       try {
         await audio.play()
         setPlaying(true)
