@@ -37,13 +37,23 @@ function PhotoOrPlaceholder({
   src,
   alt,
   initial,
+  priority = false,
 }: {
   src: string
   alt: string
   initial: string
+  priority?: boolean
 }) {
   if (src) {
-    return <img src={assetUrl(src)} alt={alt} loading="lazy" decoding="async" />
+    return (
+      <img
+        src={assetUrl(src)}
+        alt={alt}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        fetchPriority={priority ? 'high' : 'auto'}
+      />
+    )
   }
   return <ImagePlaceholder label={initial || 'Muat naik foto'} />
 }
@@ -139,6 +149,7 @@ export function InvitationPage({
                       src={child.heroPhoto}
                       alt={child.name}
                       initial={childDisplayName(child).charAt(0)}
+                      priority
                     />
                   </div>
                   <figcaption>
@@ -170,6 +181,7 @@ export function InvitationPage({
                       className="marquee__sticker"
                       src={assetUrl(src)}
                       alt=""
+                      loading="lazy"
                       decoding="async"
                       draggable={false}
                     />

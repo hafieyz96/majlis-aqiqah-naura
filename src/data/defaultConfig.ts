@@ -92,8 +92,6 @@ export const defaultConfig: SiteConfig = {
     '/images/stickers/sticker-02.jpg',
     '/images/stickers/sticker-03.jpg',
     '/images/stickers/sticker-04.jpg',
-    '/images/stickers/sticker-05.jpg',
-    '/images/stickers/sticker-06.jpg',
   ],
   // Path is resolved with Vite base (/majlis-aqiqah-naura/) via assetUrl()
   audioUrl: '/audio/selawat.mp3',

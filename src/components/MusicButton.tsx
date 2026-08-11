@@ -54,6 +54,7 @@ export const MusicButton = forwardRef<MusicButtonHandle, MusicButtonProps>(funct
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const fadeRef = useRef<number | null>(null)
   const [playing, setPlaying] = useState(false)
+  const resolvedSrc = audioUrl ? assetUrl(audioUrl) : ''
 
   const clearFade = useCallback(() => {
     if (fadeRef.current !== null) {
@@ -83,6 +84,15 @@ export const MusicButton = forwardRef<MusicButtonHandle, MusicButtonProps>(funct
     [clearFade],
   )
 
+  const ensureSrc = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio || !resolvedSrc) return
+    if (audio.src !== new URL(resolvedSrc, window.location.href).href) {
+      audio.src = resolvedSrc
+      audio.load()
+    }
+  }, [resolvedSrc])
+
   const start = useCallback(async () => {
     try {
       if (window.sessionStorage.getItem(PAUSED_KEY) === '1') return
@@ -91,6 +101,7 @@ export const MusicButton = forwardRef<MusicButtonHandle, MusicButtonProps>(funct
     }
     const audio = audioRef.current
     if (!audio) return
+    ensureSrc()
     try {
       audio.volume = 0
       await audio.play()
@@ -99,13 +110,9 @@ export const MusicButton = forwardRef<MusicButtonHandle, MusicButtonProps>(funct
     } catch {
       setPlaying(false)
     }
-  }, [fadeTo])
+  }, [ensureSrc, fadeTo])
 
   useImperativeHandle(ref, () => ({ start }), [start])
-
-  useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = TARGET_VOLUME
-  }, [audioUrl])
 
   useEffect(() => clearFade, [clearFade])
 
@@ -125,6 +132,7 @@ export const MusicButton = forwardRef<MusicButtonHandle, MusicButtonProps>(funct
       }
       return
     }
+    ensureSrc()
     try {
       await audio.play()
       setPlaying(true)
@@ -141,11 +149,11 @@ export const MusicButton = forwardRef<MusicButtonHandle, MusicButtonProps>(funct
 
   return (
     <>
+      {/* No src until play — avoids downloading ~5MB audio on first paint */}
       <audio
         ref={audioRef}
-        src={assetUrl(audioUrl)}
         loop
-        preload="auto"
+        preload="none"
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
       />
