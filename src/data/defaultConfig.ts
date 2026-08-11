@@ -88,6 +88,7 @@ export const defaultConfig: SiteConfig = {
     '/images/stickers/sticker-05.jpg',
     '/images/stickers/sticker-06.jpg',
   ],
+  // Path is resolved with Vite base (/majlis-aqiqah-naura/) via assetUrl()
   audioUrl: '/audio/selawat.mp3',
   doaText:
     'Ya Allah, jadikanlah anak-anak kami anak yang solehah, dikurniakan kesihatan, dipanjangkan usia dalam kebaikan dan sentiasa berada dalam rahmat serta perlindungan-Mu.',

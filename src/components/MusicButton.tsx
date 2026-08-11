@@ -1,4 +1,5 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { assetUrl } from '../utils/images'
 
 interface MusicButtonProps {
   audioUrl: string
@@ -142,9 +143,9 @@ export const MusicButton = forwardRef<MusicButtonHandle, MusicButtonProps>(funct
     <>
       <audio
         ref={audioRef}
-        src={audioUrl}
+        src={assetUrl(audioUrl)}
         loop
-        preload="metadata"
+        preload="auto"
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
       />
