@@ -51,13 +51,13 @@ export const defaultConfig: SiteConfig = {
   programme: [
     {
       id: 'prog-1',
-      time: '11.00 pagi – 1.00 petang',
-      items: ['Berzanji', 'Majlis Berselawat', 'Bacaan Yasin', 'Tahlil', 'Doa Selamat'],
+      time: '10.30 pagi – 12.00 tgh hari',
+      items: ['Marhaban', 'Doa', 'Jamuan Makan'],
     },
     {
       id: 'prog-2',
-      time: '1.00 petang – 3.00 petang',
-      items: ['Sambutan Hari Lahir', 'Potong Kek', 'Sesi Bergambar', 'Jamuan Makan'],
+      time: '12.00 tgh hari – 3.00 petang',
+      items: ['Sambutan Hari Lahir', 'Potong Kek', 'Sesi Bergambar'],
     },
     {
       id: 'prog-3',
